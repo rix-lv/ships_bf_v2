@@ -1,3 +1,81 @@
+# main class
+class Game
+  def initialize
+    @player_human = PlayerHuman.new
+    @player_ai = PlayerAI.new
+  end
+
+  def start!
+    @player_human.reset!
+    @player_ai.reset!
+    @ai_shot = rand(2) == 1 # who's first shot
+    
+    until  game_over? do
+      if @ai_shot
+        @ai_shot = @player_ai.make_shot
+      else
+        @ai_shot = !@player_human.make_shot
+      end
+    end
+
+    congratulations # end of game
+  end
+  
+  def game_over?
+    return @player_human.loose? || @player_ai.loose?
+  end
+
+  def congratulations
+    winner = @player_human.loose? ? @player_ai : @player_human
+    p "Game is over, congratulation to #{winner.name}!"
+  end
+end
+
+class PlayerHuman
+
+  attr_reader :name
+
+  def initialize
+    @own_field = Field.new
+    puts "Enter your name"
+    @name = gets.chomp
+  end
+  
+  def reset!
+    @own_field.reset!
+    @own_field.place_ships!
+    @own_field.show_field
+  end
+
+  # make next shot
+  # returns true if hit 
+  def make_shot
+    puts "Enter yor shot in patern \"A0\""
+    do 
+      shot = gets.chomp.upcase
+      coorect_value? = shot[0].between?('A', 'J') and shot[1].between(0, 9)
+      puts "Wrong input coordinates, reenter correct value" if not correct_value?
+    while not correct_value?
+  end 
+end
+
+class PlayerAI
+
+  attr_reader :name
+
+  def initialize
+    @own_field = Field.new
+    @name = "Computer"
+  end
+
+  def reset!
+    @own_field.reset!
+    @own_field.place_ships!
+    @own_field.show_field
+  end
+end
+
+
 class Field
 
   attr_accessor :size, :ships
@@ -163,6 +241,5 @@ class Ship
 end
 
 
-f = Field.new
-f.place_ships!
-f.show_field
+g = Game.new
+g.start!
